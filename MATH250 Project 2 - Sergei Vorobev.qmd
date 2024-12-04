@@ -1,0 +1,7 @@
+---
+title: "MATH250 Final Project - Crystal Castles"
+author: "Sergei Vorobev"
+format: html
+embed-resources: true
+---
+
