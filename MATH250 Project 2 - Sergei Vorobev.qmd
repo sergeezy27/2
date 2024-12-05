@@ -1,7 +1,25 @@
 ---
-title: "MATH250 Final Project - Crystal Castles"
+title: "MATH250 Final Project - The Weeknd"
 author: "Sergei Vorobev"
 format: html
 embed-resources: true
 ---
 
+```{r}
+#| label: setup
+#| message: false
+
+library(tidyverse)
+library(here)
+
+path <- here("Data", "the_weeknd.csv")
+the_weeknd <- read_csv(path)
+```
+
+## Introduction
+
+*The Weeknd* is a global superstar with incredible singing ability. His successful career boasts two Grammy wins, one for his performance of his song *Earned It* and another for his album *Beauty Behind the Madness*.[^1] Apart from the awards, he captures the hearts of many yearly, as he continues to be on Spotify's top 5 artists for a third year in a row now.[^2]
+
+[^1]: Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
+
+[^2]: Gavino, Nico. “Taylor Swift, the Weeknd and Bad Bunny Conquer Spotify'S 2024 Wrapped.” Hypebeast, December 4, 2024. <https://hypebeast.com/2024/12/taylor-swift-the-weeknd-and-bad-bunny-conquer-spotifys-2024-wrapped>.

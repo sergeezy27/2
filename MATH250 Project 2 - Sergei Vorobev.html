@@ -8,7 +8,7 @@
 
 <meta name="author" content="Sergei Vorobev">
 
-<title>MATH250 Project 2</title>
+<title>MATH250 Final Project - The Weeknd</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -3051,7 +3085,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">MATH250 Project 2</h1>
+<h1 class="title">MATH250 Final Project - The Weeknd</h1>
 </div>
 
 
@@ -3074,12 +3108,26 @@ vertical-align: -.125em;
 </header>
 
 
-<ul>
-<li><p>1: The artist I have chosen for my project is <em>The Weeknd</em>.</p></li>
-<li><p>2: <em>The Weeknd</em> is a modern day pop idol with more than 100 million monthly listeners on Spotify. Like many artists, <em>The Weeknd</em> earned his fame from producing consistently good music, as well as having a distinct style. His stardom can also be partially attributed to his musics’ popularity on <em>TikTok</em> which is a popular video sharing dance platform. Due to this I believe that his musics’ danceability has increased over the years. simultaneously, I believe that initially his songs had lower energy as they can be perceived to be sadder, which I believe also increased with subsequent album releases.</p></li>
-</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;Data&quot;</span>, <span class="st">&quot;the_weeknd.csv&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>the_weeknd <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p><em>The Weeknd</em> is a global superstar with incredible singing ability. His successful career boasts two Grammy wins, one for his performance of his song <em>Earned It</em> and another for his album <em>Beauty Behind the Madness</em>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Apart from the awards, he captures the hearts of many yearly, as he continues to be on Spotify’s top 5 artists for a third year in a row now.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, &amp; Facts.” Encyclopedia Britannica, December 3, 2024. <a href="https://www.britannica.com/biography/the-Weeknd" class="uri">https://www.britannica.com/biography/the-Weeknd</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Gavino, Nico. “Taylor Swift, the Weeknd and Bad Bunny Conquer Spotify’S 2024 Wrapped.” Hypebeast, December 4, 2024. <a href="https://hypebeast.com/2024/12/taylor-swift-the-weeknd-and-bad-bunny-conquer-spotifys-2024-wrapped" class="uri">https://hypebeast.com/2024/12/taylor-swift-the-weeknd-and-bad-bunny-conquer-spotifys-2024-wrapped</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
