@@ -3111,13 +3111,507 @@ vertical-align: -.125em;
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;Data&quot;</span>, <span class="st">&quot;the_weeknd.csv&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>the_weeknd <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;Data&quot;</span>, <span class="st">&quot;the_weeknd.csv&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>the_weeknd <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p><em>The Weeknd</em> is a global superstar with incredible singing ability. His successful career boasts two Grammy wins, one for his performance of his song <em>Earned It</em> and another for his album <em>Beauty Behind the Madness</em>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Apart from the awards, he captures the hearts of many yearly, as he continues to be on Spotify’s top 5 artists for a third year in a row now.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>I was introduced to <em>The Weeknd</em> in middle school with his release of the album <em>Beauty Behind the Madness</em> and especially the song <em>The Hills</em>. It was popular at the time, and I really enjoyed its more pop take on the hip-hop genre. He quickly became one of my favorite artists and I followed all his subsequent releases. Since then my music taste has changed quite a lot, but <em>Kiss Land</em>, one of his early albums, remains my favorite.</p>
+<p><em>The Weeknd</em> sings about drug use and sex, which makes his music quite somber. In my opinion <em>Kiss Land</em> is incredible, surpassing the rest. Due to this, I want to see what makes this different and thus stand out. I also believe that <code>valence</code> and <code>danceability</code> are related in his music as I’ve seen a trend of his songs becoming more danceable, but less melancholy at the same time.</p>
+</section>
+<section id="exploring-tempo-danceability-and-valence" class="level1">
+<h1>Exploring tempo, danceability, and valence</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>the_weeknd_sm <span class="ot">&lt;-</span> the_weeknd <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(album_name, track_name, tempo, danceability, valence) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(album_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Trilogy&quot;</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Kiss Land&quot;</span>, </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Beauty Behind The Madness&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Starboy&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;My Dear Melancholy,&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;After Hours&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Dawn FM&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For this analysis I am only considering his studio album releases and one ep <em>My Dear Melancholy,</em> to avoid redundancy of deluxe and live versions, as well as re-releases.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>the_weeknd_albums <span class="ot">&lt;-</span> the_weeknd_sm <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(album_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Track_count =</span> <span class="fu">n</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_tempo =</span> <span class="fu">round</span>(<span class="fu">mean</span>(tempo), <span class="dv">3</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_danceability =</span> <span class="fu">round</span>(<span class="fu">mean</span>(danceability), <span class="dv">3</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_valence =</span> <span class="fu">round</span>(<span class="fu">mean</span>(valence), <span class="dv">3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Avg_valence)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(the_weeknd_albums)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="rszwtorkug" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rszwtorkug table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#rszwtorkug thead, #rszwtorkug tbody, #rszwtorkug tfoot, #rszwtorkug tr, #rszwtorkug td, #rszwtorkug th {
+border-style: none;
+}
+#rszwtorkug p {
+margin: 0;
+padding: 0;
+}
+#rszwtorkug .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#rszwtorkug .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#rszwtorkug .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#rszwtorkug .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#rszwtorkug .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#rszwtorkug .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#rszwtorkug .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#rszwtorkug .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#rszwtorkug .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#rszwtorkug .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#rszwtorkug .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#rszwtorkug .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#rszwtorkug .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#rszwtorkug .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#rszwtorkug .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#rszwtorkug .gt_from_md > :first-child {
+margin-top: 0;
+}
+#rszwtorkug .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#rszwtorkug .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#rszwtorkug .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#rszwtorkug .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#rszwtorkug .gt_row_group_first td {
+border-top-width: 2px;
+}
+#rszwtorkug .gt_row_group_first th {
+border-top-width: 2px;
+}
+#rszwtorkug .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#rszwtorkug .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#rszwtorkug .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#rszwtorkug .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#rszwtorkug .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#rszwtorkug .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#rszwtorkug .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#rszwtorkug .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#rszwtorkug .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#rszwtorkug .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#rszwtorkug .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#rszwtorkug .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#rszwtorkug .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#rszwtorkug .gt_left {
+text-align: left;
+}
+#rszwtorkug .gt_center {
+text-align: center;
+}
+#rszwtorkug .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#rszwtorkug .gt_font_normal {
+font-weight: normal;
+}
+#rszwtorkug .gt_font_bold {
+font-weight: bold;
+}
+#rszwtorkug .gt_font_italic {
+font-style: italic;
+}
+#rszwtorkug .gt_super {
+font-size: 65%;
+}
+#rszwtorkug .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#rszwtorkug .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#rszwtorkug .gt_indent_1 {
+text-indent: 5px;
+}
+#rszwtorkug .gt_indent_2 {
+text-indent: 10px;
+}
+#rszwtorkug .gt_indent_3 {
+text-indent: 15px;
+}
+#rszwtorkug .gt_indent_4 {
+text-indent: 20px;
+}
+#rszwtorkug .gt_indent_5 {
+text-indent: 25px;
+}
+#rszwtorkug .katex-display {
+display: inline-flex !important;
+margin-bottom: 0.75em !important;
+}
+#rszwtorkug div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="album_name" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">album_name</th>
+<th id="Track_count" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Track_count</th>
+<th id="Avg_tempo" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg_tempo</th>
+<th id="Avg_danceability" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg_danceability</th>
+<th id="Avg_valence" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg_valence</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="album_name">After Hours</td>
+<td class="gt_row gt_right" headers="Track_count">14</td>
+<td class="gt_row gt_right" headers="Avg_tempo">126.770</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.508</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.251</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="album_name">My Dear Melancholy,</td>
+<td class="gt_row gt_right" headers="Track_count">7</td>
+<td class="gt_row gt_right" headers="Avg_tempo">125.009</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.445</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.275</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="album_name">Trilogy</td>
+<td class="gt_row gt_right" headers="Track_count">30</td>
+<td class="gt_row gt_right" headers="Avg_tempo">125.206</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.556</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.287</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="album_name">Kiss Land</td>
+<td class="gt_row gt_right" headers="Track_count">10</td>
+<td class="gt_row gt_right" headers="Avg_tempo">121.089</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.563</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.297</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="album_name">Beauty Behind The Madness</td>
+<td class="gt_row gt_right" headers="Track_count">14</td>
+<td class="gt_row gt_right" headers="Avg_tempo">119.252</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.563</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.298</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="album_name">Dawn FM</td>
+<td class="gt_row gt_right" headers="Track_count">16</td>
+<td class="gt_row gt_right" headers="Avg_tempo">116.020</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.590</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.463</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="album_name">Starboy</td>
+<td class="gt_row gt_right" headers="Track_count">18</td>
+<td class="gt_row gt_right" headers="Avg_tempo">130.664</td>
+<td class="gt_row gt_right" headers="Avg_danceability">0.646</td>
+<td class="gt_row gt_right" headers="Avg_valence">0.469</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 
 

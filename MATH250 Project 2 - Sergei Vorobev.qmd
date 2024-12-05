@@ -11,6 +11,7 @@ embed-resources: true
 
 library(tidyverse)
 library(here)
+library(gt)
 
 path <- here("Data", "the_weeknd.csv")
 the_weeknd <- read_csv(path)
@@ -19,6 +20,47 @@ the_weeknd <- read_csv(path)
 ## Introduction
 
 *The Weeknd* is a global superstar with incredible singing ability. His successful career boasts two Grammy wins, one for his performance of his song *Earned It* and another for his album *Beauty Behind the Madness*.[^1] Apart from the awards, he captures the hearts of many yearly, as he continues to be on Spotify's top 5 artists for a third year in a row now.[^2]
+
+I was introduced to *The Weeknd* in middle school with his release of the album *Beauty Behind the Madness* and especially the song *The Hills*. It was popular at the time, and I really enjoyed its more pop take on the hip-hop genre. He quickly became one of my favorite artists and I followed all his subsequent releases. Since then my music taste has changed quite a lot, but *Kiss Land*, one of his early albums, remains my favorite.
+
+*The Weeknd* sings about drug use and sex, which makes his music quite somber. In my opinion *Kiss Land* is incredible, surpassing the rest. Due to this, I want to see what makes this different and thus stand out. I also believe that `valence` and `danceability` are related in his music as I've seen a trend of his songs becoming more danceable, but less melancholy at the same time.
+
+# Exploring tempo, danceability, and valence
+
+```{r}
+#| label: data cleaning
+
+the_weeknd_sm <- the_weeknd %>% 
+  select(album_name, track_name, tempo, danceability, valence) %>% 
+  filter(album_name %in% c("Trilogy", 
+                           "Kiss Land", 
+                           "Beauty Behind The Madness",
+                           "Starboy",
+                           "My Dear Melancholy,",
+                           "After Hours",
+                           "Dawn FM"))
+```
+
+For this analysis I am only considering his studio album releases and one ep *My Dear Melancholy,* to avoid redundancy of deluxe and live versions, as well as re-releases.
+
+```{r}
+the_weeknd_albums <- the_weeknd_sm %>%
+  group_by(album_name) %>% 
+  summarise(Track_count = n(),
+            Avg_tempo = round(mean(tempo), 3),
+            Avg_danceability = round(mean(danceability), 3),
+            Avg_valence = round(mean(valence), 3)) %>% 
+  arrange(Avg_valence)
+gt(the_weeknd_albums)
+```
+
+```{r}
+#| label: first plot
+#| fig-alt: A.
+
+#ggplot()
+```
+
 
 [^1]: Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
 
