@@ -19,49 +19,92 @@ the_weeknd <- read_csv(path)
 
 ## Introduction
 
-*The Weeknd* is a global superstar with incredible singing ability. His successful career boasts two Grammy wins, one for his performance of his song *Earned It* and another for his album *Beauty Behind the Madness*.[^1] Apart from the awards, he captures the hearts of many yearly, as he continues to be on Spotify's top 5 artists for a third year in a row now.[^2]
+*The Weeknd* is a Canadian singer who initially gained a lot of fame by posting his mix tapes on the internet in the early 2010s. Since then his fame has skyrocketed. He won Grammy Awards for his performance of the song *Earned It,* and his album *Beauty Behind the Madness*.[^1] He also consistently ranks among Spotify's top ten most-streamed artists each year.[^2]
 
-I was introduced to *The Weeknd* in middle school with his release of the album *Beauty Behind the Madness* and especially the song *The Hills*. It was popular at the time, and I really enjoyed its more pop take on the hip-hop genre. He quickly became one of my favorite artists and I followed all his subsequent releases. Since then my music taste has changed quite a lot, but *Kiss Land*, one of his early albums, remains my favorite.
+![Abel Makkonen Tesfaye - The Weeknd](the_weeknd.jpg)
 
-*The Weeknd* sings about drug use and sex, which makes his music quite somber. In my opinion *Kiss Land* is incredible, surpassing the rest. Due to this, I want to see what makes this different and thus stand out. I also believe that `valence` and `danceability` are related in his music as I've seen a trend of his songs becoming more danceable, but less melancholy at the same time.
+Initially, I was introduced to *The Weekend* through his song *The Hills* in middle school, but since I have fallen in love with the magical somber sound of albums ***Kiss Land*** and *After Hours*.
 
-# Exploring tempo, danceability, and valence
+For me *The Weekend*'s music falls under two categories, it is either somber and moody, or very pop-like. Due to this reason, I believe that his music's `danceability` (suitability for dancing) can be explained by its `valence` (happiness). Despite often exploring recurring themes such as drug use and sex, his albums convey distinctly different emotions. For instance, ***Kiss Land*** has a melancholic and moody tone, whereas *Starboy* feels upbeat and danceable.
+
+## Numerical analysis
 
 ```{r}
 #| label: data cleaning
 
+albums <- c("Trilogy",
+            "Kiss Land",
+            "Beauty Behind The Madness",
+            "Starboy",
+            "My Dear Melancholy,",
+            "After Hours",
+            "Dawn FM")
+
 the_weeknd_sm <- the_weeknd %>% 
-  select(album_name, track_name, tempo, danceability, valence) %>% 
-  filter(album_name %in% c("Trilogy", 
-                           "Kiss Land", 
-                           "Beauty Behind The Madness",
-                           "Starboy",
-                           "My Dear Melancholy,",
-                           "After Hours",
-                           "Dawn FM"))
+  select(album_name, track_name, energy, danceability, valence) %>% 
+  filter(album_name %in% albums) %>% 
+  mutate(album_name = factor(album_name, levels = albums))
 ```
 
-For this analysis I am only considering his studio album releases and one ep *My Dear Melancholy,* to avoid redundancy of deluxe and live versions, as well as re-releases.
+I will only analyze the base version of all studio albums in addition to *My Dear Melancholy,* which is technically an ep, in order to avoid redundancy of deluxe and live versions.
 
 ```{r}
-the_weeknd_albums <- the_weeknd_sm %>%
+#| label: valence table
+
+the_weeknd_valence <- the_weeknd_sm %>% 
   group_by(album_name) %>% 
-  summarise(Track_count = n(),
-            Avg_tempo = round(mean(tempo), 3),
-            Avg_danceability = round(mean(danceability), 3),
-            Avg_valence = round(mean(valence), 3)) %>% 
-  arrange(Avg_valence)
-gt(the_weeknd_albums)
+  summarise("Average valence" = round(mean(valence), 3),
+            "Saddest song" = track_name[which.min(valence)],
+            "Lowest valence" = round(min(valence), 3),
+            "Happiest song" = track_name[which.max(valence)],
+            "Highest valence" = round(max(valence), 3)) %>% 
+  rename("Album name" = album_name)
+gt(the_weeknd_valence)
 ```
+
+The data set presents *As You Are* as his saddest song with a `valence` of **0.053**, which I personally do not agree with. I believe it has such a low valence because the second half of the song slows down considerably and he wails a little in his singing. On the other hand *Sacrifice* is his happies song with a `valence` **0.905**, presuambly due to a funky sounding beat.
 
 ```{r}
-#| label: first plot
-#| fig-alt: A.
+#| label: danceability table
 
-#ggplot()
+the_weeknd_danceability <- the_weeknd_sm %>% 
+  group_by(album_name) %>% 
+  summarise("Average danceability" = round(mean(danceability), 3),
+            "Least danceable song" = track_name[which.min(danceability)],
+            "Lowest danceability" = round(min(danceability), 3),
+            "Most danceable song" = track_name[which.max(danceability)],
+            "Highest danceability" = round(max(danceability), 3)) %>% 
+  rename("Album name" = album_name)
+gt(the_weeknd_danceability)
 ```
 
+Comparing the two tables, only a handful songs apear on both: *All I Know*, *Dawn FM* and *A Lonely Night*. Interestingly `Tears In The Rain` is the most danceable song on ***Kiss Land*** while some consider this to be the saddest song he has ever made.[^3] I agree with this judgement as the album in general is not very danceable, and a `danceability` of **0.655** is not particularly high.
+
+To consider the relationship between these two variables I will test a **linear regression** model between the two as an inference. Here are the test hypotheses:
+
+- Null hypothesis: There is no linear relationship between `danceability` and `valence` (the slope of the regression line is zero).
+
+- Alternative hypothesis: There is a linear relationship between `danceability` and `valence`.
+
+```{r}
+#| fig-alt: Scatter plot showing danceability explained by valence of The Weeknd songs, with a positive regression line.
+#| label: danceability vs valence
+#| warning: false
+
+ggplot(the_weeknd_sm,
+       aes(x = valence,
+           y = danceability)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(title = "The Weeknd track dancebility",
+       x = "Valence",
+       y = "Danceability") +
+  theme_minimal()
+```
 
 [^1]: Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
 
 [^2]: Gavino, Nico. “Taylor Swift, the Weeknd and Bad Bunny Conquer Spotify'S 2024 Wrapped.” Hypebeast, December 4, 2024. <https://hypebeast.com/2024/12/taylor-swift-the-weeknd-and-bad-bunny-conquer-spotifys-2024-wrapped>.
+
+[^3]: Vidal, Juan. "7 The Weeknd Songs to Help You Cry in the Shower." BET, June 4, 2015. <https://www.bet.com/article/ijsbe8/7-the-weeknd-songs-to-help-you-cry-in-the-shower>.
