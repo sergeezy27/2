@@ -19,15 +19,21 @@ the_weeknd <- read_csv(path)
 
 ## Introduction
 
-*The Weeknd* is a Canadian singer who initially gained a lot of fame by posting his mix tapes on the internet in the early 2010s. Since then his fame has skyrocketed. He won Grammy Awards for his performance of the song *Earned It,* and his album *Beauty Behind the Madness*.[^1] He also consistently ranks among Spotify's top ten most-streamed artists each year.[^2]
+*The Weeknd* is a Canadian singer who initially gained a lot of fame by posting his mix tapes on the internet in the early 2010s. Since then his fame has skyrocketed. He won Grammy Awards for his performance of the song *Earned It,* and his album *Beauty Behind the Madness*.[^1] He also consistently ranks among Spotify's top ten most-streamed artists each year.
 
 ![Abel Makkonen Tesfaye - The Weeknd](the_weeknd.jpg)
 
-Initially, I was introduced to *The Weekend* through his song *The Hills* in middle school, but since I have fallen in love with the magical somber sound of albums ***Kiss Land*** and *After Hours*.
+Initially, I was introduced to *The Weekend* through his song *The Hills* in middle school, but since I have fallen in love with the magical somber sound of albums ***Kiss Land*** and ***After Hours***. There is no consensus whether the two albums are fundamentally similar. Fans, including myself, view ***Kiss Land*** as a foundational precursor to ***After Hours*** due to their shared dark, cinematic R&B aesthetic. Critics, however, often downplay these similarities, citing ***After Hours*** as a more polished and superior work.[^2]
 
-For me *The Weekend*'s music falls under two categories, it is either somber and moody, or very pop-like. Due to this reason, I believe that his music's `danceability` (suitability for dancing) can be explained by its `valence` (happiness). Despite often exploring recurring themes such as drug use and sex, his albums convey distinctly different emotions. For instance, ***Kiss Land*** has a melancholic and moody tone, whereas *Starboy* feels upbeat and danceable.
+Dissimilarity in opinion and my personal perception motivate me to determine whether the two albums are similar in sound and the emotional impact. To analyze this, I will examine the following track attributes:
 
-## Numerical analysis
+- `energy`: a measure of dynamics, loudness, and intensity.
+
+- `danceability`: reflecting the suitability for dancing, a key factor in pop.
+
+- `valence`: a measure of how positive a track sounds, reflecting the prominence of melancholy in his music.
+
+## Exploratory analysis
 
 ```{r}
 #| label: data cleaning
@@ -49,62 +55,91 @@ the_weeknd_sm <- the_weeknd %>%
 I will only analyze the base version of all studio albums in addition to *My Dear Melancholy,* which is technically an ep, in order to avoid redundancy of deluxe and live versions.
 
 ```{r}
-#| label: valence table
-
-the_weeknd_valence <- the_weeknd_sm %>% 
-  group_by(album_name) %>% 
-  summarise("Average valence" = round(mean(valence), 3),
-            "Saddest song" = track_name[which.min(valence)],
-            "Lowest valence" = round(min(valence), 3),
-            "Happiest song" = track_name[which.max(valence)],
-            "Highest valence" = round(max(valence), 3)) %>% 
-  rename("Album name" = album_name)
-gt(the_weeknd_valence)
-```
-
-The data set presents *As You Are* as his saddest song with a `valence` of **0.053**, which I personally do not agree with. I believe it has such a low valence because the second half of the song slows down considerably and he wails a little in his singing. On the other hand *Sacrifice* is his happies song with a `valence` **0.905**, presuambly due to a funky sounding beat.
-
-```{r}
-#| label: danceability table
-
-the_weeknd_danceability <- the_weeknd_sm %>% 
-  group_by(album_name) %>% 
-  summarise("Average danceability" = round(mean(danceability), 3),
-            "Least danceable song" = track_name[which.min(danceability)],
-            "Lowest danceability" = round(min(danceability), 3),
-            "Most danceable song" = track_name[which.max(danceability)],
-            "Highest danceability" = round(max(danceability), 3)) %>% 
-  rename("Album name" = album_name)
-gt(the_weeknd_danceability)
-```
-
-Comparing the two tables, only a handful songs apear on both: *All I Know*, *Dawn FM* and *A Lonely Night*. Interestingly `Tears In The Rain` is the most danceable song on ***Kiss Land*** while some consider this to be the saddest song he has ever made.[^3] I agree with this judgement as the album in general is not very danceable, and a `danceability` of **0.655** is not particularly high.
-
-To consider the relationship between these two variables I will test a **linear regression** model between the two as an inference. Here are the test hypotheses:
-
-- Null hypothesis: There is no linear relationship between `danceability` and `valence` (the slope of the regression line is zero).
-
-- Alternative hypothesis: There is a linear relationship between `danceability` and `valence`.
-
-```{r}
-#| fig-alt: Scatter plot showing danceability explained by valence of The Weeknd songs, with a positive regression line.
-#| label: danceability vs valence
-#| warning: false
+#| fig-alt: Different boxplots of energy for each album and ep of The Weeknd.
+#| label: energy boxplot
 
 ggplot(the_weeknd_sm,
+       aes(x = album_name,
+           y = energy,
+           fill = album_name)) +
+  geom_boxplot(show.legend = FALSE) +
+  scale_fill_brewer(palette = "Dark2") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + #https://www.geeksforgeeks.org/rotating-and-spacing-axis-labels-in-ggplot2-in-r/
+  labs(x = "Album name",
+       y = "Energy",
+       title = "The Weeknd album energy")
+```
+
+The boxplots are arranged by the albums' release date. It seems as if there is a slight trend of the energy increasing with each subsequent release. It also seems as if ***Kiss Land*** is ahead of its time, deviating from this trend. Energy-wise, the hypothesis is supported, as ***Kiss Land*** and ***After Hours*** show similar levels. Interestingly, ***Kiss Land*** appears closest to *My Dear Melancholy,* in their median energy, aligning with some reviewers' views that tracks like *Privilege* could seamlessly be added to the album without disrupting its style.[^3]
+
+```{r}
+#| label: average tables
+
+the_weeknd_summary <- the_weeknd_sm %>% 
+  group_by(album_name) %>% 
+  summarise("Average energy" = round(mean(energy), 3),
+          "Average valence" = round(mean(valence), 3),
+          "Average danceability" = round(mean(danceability), 3)) %>% 
+  rename("Album name" = album_name)
+gt(the_weeknd_summary)
+```
+
+On average ***After Hours*** appears to be lower in all three attributes, but still similar. Considering the mean instead of the median the two albums are the most comparable, unlike the previously perceived *My Dear Melancholy,*. Danceability tends to be higher when tracks are happier, as reflected by the correlation between `valence` and `danceability`. However, `energy` does not always align with danceability as some albums with high average `energy` do not show a corresponding increase in `danceability`.
+
+```{r}
+#| label: two album cleaning
+
+the_weeknd_moody <- the_weeknd_sm %>% 
+  filter(album_name %in% c("Kiss Land", "After Hours"))
+```
+
+```{r}
+#| fig-alt: Scatter plot of dancebility explained by valence for two of The Weeknd's albums
+#| message: false
+#| warning: false
+#| label: two album scatter plot
+
+ggplot(the_weeknd_moody,
        aes(x = valence,
-           y = danceability)) +
+           y = danceability,
+           color = album_name,
+           size = energy)) +
   geom_point() +
   geom_smooth(method = "lm",
-              se = FALSE) +
-  labs(title = "The Weeknd track dancebility",
-       x = "Valence",
-       y = "Danceability") +
-  theme_minimal()
+              se = FALSE,
+              aes(group = 1),
+              linewidth = 1) +
+  scale_color_brewer(palette = "Dark2") +
+  guides(size = guide_legend(override.aes = list(linetype = 0))) + #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/
+  theme_minimal() +
+  labs(x = "Valence",
+       y = "Danceability",
+       title = "Danceability, valence, and energy ",
+       color = "Album name",
+       size = "Energy")
 ```
+
+```{r}
+#| label: model and track stat tables
+
+model <- lm(danceability ~ valence, data = the_weeknd_moody)
+summary(model)
+
+the_weeknd_tracks <- the_weeknd_moody %>% 
+  group_by(album_name) %>% 
+  summarise("Least danceable song" = track_name[which.min(danceability)],
+            "Energy" = energy[which.min(danceability)],
+            "Most danceable song" = track_name[which.max(danceability)],
+            "Energy" = energy[which.max(danceability)]) %>% 
+  rename("Album name" = album_name)
+gt(the_weeknd_tracks)
+```
+
+The plot confirms that `energy` and `danceability` are unlikely to be correlated. Tracks *Kiss Land* and *Save Your Tears* are drastically different in `danceability`, but their `energy` is similar. For these two albums `valence` seems to explain `danceability` with a linear regression model. 
 
 [^1]: Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
 
-[^2]: Gavino, Nico. “Taylor Swift, the Weeknd and Bad Bunny Conquer Spotify'S 2024 Wrapped.” Hypebeast, December 4, 2024. <https://hypebeast.com/2024/12/taylor-swift-the-weeknd-and-bad-bunny-conquer-spotifys-2024-wrapped>.
+[^2]: Herrera, Isabelia. “The Weeknd: After Hours.” Pitchfork, March 24, 2020. <https://pitchfork.com/reviews/albums/the-weeknd-after-hours/>.
 
-[^3]: Vidal, Juan. "7 The Weeknd Songs to Help You Cry in the Shower." BET, June 4, 2015. <https://www.bet.com/article/ijsbe8/7-the-weeknd-songs-to-help-you-cry-in-the-shower>.
+[^3]: Luzaityte, Rebeka. “In Defence of Kiss Land - Rebeka Luzaityte - Medium.” Medium, December 8, 2021. <https://medium.com/@rebekalztt/in-defence-of-kiss-land-d472ed155d73>.
