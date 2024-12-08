@@ -63,7 +63,7 @@ after_hours <- the_weeknd_sm %>%
 
 I will only analyze the base version of all studio albums in addition to *My Dear Melancholy,* which is technically an ep, in order to avoid redundancy of deluxe and live versions.
 
-Fistly, I would like to determine whether there is a significant difference in energy levels between ***Kiss Land*** and ***After Hours***, I will perform a **two-sample t-test**. Since the analysis is performed on complete samples, the inference is done for a hypothetical population which may contain songs that weren't published on the albums. The hypotheses for this test are:
+Firstly, I would like to determine whether there is a significant difference in energy levels between ***Kiss Land*** and ***After Hours***, I will perform a **two-sample t-test**. Since the analysis is performed on complete samples, the inference is done for a hypothetical population which may contain songs that weren't published on the albums. The hypotheses for this test are:
 
 -   Null hypothesis: The mean energy levels of ***Kiss Land*** and ***After Hours*** are equal.
 
@@ -86,7 +86,7 @@ ggplot(the_weeknd_sm,
        y = "Energy")
 ```
 
-The boxplots are arranged by the albums' release date. It seems as if there is a slight trend of the energy increasing with each subsequent release. However, Kiss Land stands out as a deviation from this trend, presenting the highest median energy. This aligns with The Weeknd’s own characterization of the album as his most honest and emotionally vulnerable work.[^3] Median wise, ***Kiss Land*** appears closest to *My Dear Melancholy,* instead of ***After Hours***. This supports reviewers' perspectives that tracks from this ep could seamlessly integrate into ***Kiss Land*** without disrupting its cohesive style[^4].
+The boxplots are arranged by the albums' release date. It seems as if there is a slight trend of the energy increasing with each subsequent release. However, ***Kiss Land*** stands out as a deviation from this trend, presenting the highest median energy. This aligns with *The Weeknd*’s own characterization of the album as his most honest and emotionally vulnerable work.[^3] Median wise, ***Kiss Land*** appears closest to *My Dear Melancholy,* instead of ***After Hours***. This supports reviewers' perspectives that tracks from this ep could seamlessly integrate into ***Kiss Land*** without disrupting its cohesive style[^4].
 
 ![Kiss Land album cover](kiss_land.jpg)
 
@@ -96,7 +96,7 @@ The boxplots are arranged by the albums' release date. It seems as if there is a
 t.test(energy ~ album_name, data = main_albums)
 ```
 
-After conducting the test, it resulted in a p-value of **0.2052**. This p-value indicates that if the null hypothesis was true, the albums would have a **20.5%** of having energy levels like this. We fail to reject the null hypothesis; it is likely that ***Kiss Land*** and ***After Hours*** have the same energy on average. We draw no further conclusions.
+After conducting the test, it resulted in a p-value of **0.2052**. This p-value indicates that if the null hypothesis was true, the albums would have a **20.5%** chance of having energy levels like this. We fail to reject the null hypothesis; it is likely that ***Kiss Land*** and ***After Hours*** have the same energy on average. We draw no further conclusions.
 
 ## Valence and danceability analysis
 
