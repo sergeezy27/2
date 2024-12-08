@@ -13,6 +13,7 @@ library(tidyverse)
 library(here)
 library(gt)
 library(ggrepel) # library to shift overlapping plot labels
+library(viridis) # Dark2 doesn't have enough colors for all the tracks on an album
 
 path <- here("Data", "the_weeknd.csv")
 the_weeknd <- read_csv(path)
@@ -20,17 +21,19 @@ the_weeknd <- read_csv(path)
 
 ## Introduction
 
-*The Weeknd* is a Canadian singer who initially gained a lot of fame by posting his mix tapes on the internet in the early 2010s. Since then his fame has skyrocketed. He won Grammy Awards for his performance of the song *Earned It,* and his album *Beauty Behind the Madness*.[^1] He also consistently ranks among Spotify's top ten most-streamed artists each year.
-
-[^1]: Bauer, Patricia. “The Weeknd \| Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
+*The Weeknd* is a Canadian singer who initially gained fame by posting his mix tapes online. He has since become a critically acclaimed musician and Grammy Award winner.[^1] I was introduced to *The Weekend* through his song *The Hills* in middle school, but since I've fallen in love with the magical, somber sound of albums ***Kiss Land*** and ***After Hours***.
 
 ![Abel Makkonen Tesfaye - The Weeknd](the_weeknd.jpg)
 
-Initially, I was introduced to *The Weekend* through his song *The Hills* in middle school, but since I have fallen in love with the magical somber sound of albums ***Kiss Land*** and ***After Hours***. There is no consensus on whether the two albums are fundamentally similar. Fans, including myself, view ***Kiss Land*** as a foundational precursor to ***After Hours*** due to their shared dark, cinematic R&B aesthetic. Critics, however, often downplay these similarities, citing ***After Hours*** as a more polished and superior work.[^2]
+Fans, such as myself, often see ***Kiss Land*** as a precursor to ***After Hours*** due to their shared dark, cinematic R&B sound, while critics regard ***After Hours*** as a more polished, superior work.[^2]
 
-Dissimilarity in opinion and my personal perception motivate me to determine whether the two albums are similar in sound and their emotional impact. To analyze this, I will examine the following track attributes:
+Differences in opinion and my personal perception motivate me to determine whether the two albums are similar. I aim to test whether the mean `energy`, which reflects dynamics, loudness, and intensity, is the same between the two albums:
 
--   `energy`: a measure of dynamics, loudness, and intensity.
+-   Null hypothesis: The mean energy levels of ***Kiss Land*** and ***After Hours*** are equal.
+
+-   Alternative hypothesis: The mean energy levels of ***Kiss Land*** and ***After Hours*** are different.
+
+I also want to conduct exploratory analysis on the following key attributes:
 
 -   `danceability`: reflecting the suitability for dancing, a key factor in pop.
 
@@ -61,16 +64,8 @@ after_hours <- the_weeknd_sm %>%
   filter(album_name == "After Hours")
 ```
 
-I will only analyze the base version of all studio albums in addition to *My Dear Melancholy,* which is technically an ep, in order to avoid redundancy of deluxe and live versions.
-
-Firstly, I would like to determine whether there is a significant difference in energy levels between ***Kiss Land*** and ***After Hours***, I will perform a **two-sample t-test**. Since the analysis is performed on complete samples, the inference is done for a hypothetical population which may contain songs that weren't published on the albums. The hypotheses for this test are:
-
--   Null hypothesis: The mean energy levels of ***Kiss Land*** and ***After Hours*** are equal.
-
--   Alternative hypothesis: The mean energy levels of ***Kiss Land*** and ***After Hours*** are different.
-
 ```{r}
-#| fig-alt: Different boxplots of energy for each album and ep of The Weeknd.
+#| fig-alt: Different boxplots of energy for each album and EP of The Weeknd.
 #| label: energy boxplot
 
 ggplot(the_weeknd_sm,
@@ -86,7 +81,7 @@ ggplot(the_weeknd_sm,
        y = "Energy")
 ```
 
-The boxplots are arranged by the albums' release date. It seems as if there is a slight trend of the energy increasing with each subsequent release. However, ***Kiss Land*** stands out as a deviation from this trend, presenting the highest median energy. This aligns with *The Weeknd*’s own characterization of the album as his most honest and emotionally vulnerable work.[^3] Median wise, ***Kiss Land*** appears closest to *My Dear Melancholy,* instead of ***After Hours***. This supports reviewers' perspectives that tracks from this ep could seamlessly integrate into ***Kiss Land*** without disrupting its cohesive style[^4].
+The boxplots show a slight trend of increasing `energy` with each album release, but ***Kiss Land*** deviates, presenting the highest median `energy`. This aligns with *The Weeknd*’s view of the album as his most honest and vulnerable.[^3] Median-wise, ***Kiss Land*** is closer to *My Dear Melancholy,* than ***After Hours***, supporting critics who suggest that tracks from *My Dear Melancholy,* could fit well into ***Kiss Land*** without disrupting its style.[^4] To compare the means between the albums of focus, a **two-sample t-test** is required.
 
 ![Kiss Land album cover](kiss_land.jpg)
 
@@ -96,7 +91,7 @@ The boxplots are arranged by the albums' release date. It seems as if there is a
 t.test(energy ~ album_name, data = main_albums)
 ```
 
-After conducting the test, it resulted in a p-value of **0.2052**. This p-value indicates that if the null hypothesis was true, the albums would have a **20.5%** chance of having energy levels like this. We fail to reject the null hypothesis; it is likely that ***Kiss Land*** and ***After Hours*** have the same energy on average. We draw no further conclusions.
+After conducting the test, it resulted in a p-value of **0.2052**. Such a high p-value indicates no significant difference in energy levels between ***Kiss Land*** and ***After Hours***. We fail to reject the null and draw no further conclusions.
 
 ## Valence and danceability analysis
 
@@ -112,12 +107,12 @@ the_weeknd_summary <- the_weeknd_sm %>%
 gt(the_weeknd_summary)
 ```
 
-On average ***After Hours*** appears to be lower in all three attributes, and the most similar to ***Kiss Land***. Also, the mean is more similar compared to *My Dear Melancholy,* which had a more similar median. 
+On average ***After Hours*** appears lower in all three attributes, and the most similar to ***Kiss Land***. *My Dear Melancholy,* does not appear to be as similar as ***After Hours***. 
 
 ![After Hours album cover](after_hours.jpg){width="600"}
 
 ```{r}
-#| fig-alt: A scatter for After Hours showing the danceability and valence of each track
+#| fig-alt: A scatter for After Hours showing the danceability and valence of each track.
 #| label: After Hours scatter plot
 
 ggplot(after_hours,
@@ -131,6 +126,7 @@ ggplot(after_hours,
                   nudge_x = 0.05,
                   nudge_y = 0.02,
                   segment.color = NA) + #https://rdrr.io/cran/ggrepel/man/geom_text_repel.html
+  scale_color_viridis(discrete = TRUE) + # Dark2 doesn't have enough colors
   theme_minimal() +
   labs(title = "Danceability vs valence for After Hours",
        x = "Valence",
@@ -142,7 +138,7 @@ ggplot(after_hours,
 In ***After Hours***, `danceability` is higher in happier, upbeat tracks. For example, *Save Your Tears* has a groovy baseline and fast tempo, increasing both `danceability` and `valence`, while *Until I Bleed Out* is slower with dragged vocals, lowering both values.
 
 ```{r}
-#| fig-alt: Scatter plot of dancebility explained by valence for two of The Weeknd's albums
+#| fig-alt: Scatter plot of dancebility explained by valence for two of The Weeknd's albums. Each point's size represents the track's energy.
 #| message: false
 #| warning: false
 #| label: two album scatter plot
@@ -152,18 +148,21 @@ ggplot(main_albums,
            y = danceability,
            color = album_name,
            size = energy)) +
-  geom_point() +
+  geom_point(alpha = 0.85) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
   scale_color_brewer(palette = "Dark2") +
   theme_minimal() +
-  labs(title = "Danceability, valence, and energy ",
+  labs(title = "Key attributes of Kiss Land and After Hours",
        x = "Valence",
        y = "Danceability",
        color = "Album name",
-       size = "Energy")
+       size = "Energy") +
+  scale_size_continuous(range = c(3, 10)) +
+  guides(size = guide_legend(override.aes = list(linetype = 0))) #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/
 ```
 
 ```{r}
-#| label: model and track stat tables
+#| label: energy table
 
 the_weeknd_danceability <- main_albums %>% 
   group_by(album_name) %>% 
@@ -175,11 +174,11 @@ the_weeknd_danceability <- main_albums %>%
 gt(the_weeknd_danceability)
 ```
 
-Analyzing both albums, it is likely that `danceability` and `valence` are correlated. Also, energy does not seem to be correlated with either variable in the plot. Additionally, `energy` for the most and least danceable songs is not significantly different in ***Kiss Land***. The distribution of `valence` and `danceability` appear to be similar for both albums, although ***After Hours*** contains more sad and un-danceable songs, while ***Kiss Land*** has more mid-range neutral mood tracks.
+Looking at the scatter plot, `danceability` and `valence` seem correlated, but `energy` doesn’t correlate with either variable. This is supported by the observation that `energy` for the most and least danceable songs in ***Kiss Land*** is not significantly different. Both albums have similar `valence` and `danceability` distributions, though ***After Hours*** has more melancholic tracks, while ***Kiss Land*** has more danceable and mood-neutral ones.
 
 ## Conclusion
 
-Overall the analysis suggests that my favorite albums ***Kiss Land*** and ***After Hours*** are similar in their most important attributes. The statistical inference suggests that tracks on both albums are likely to possess the same energy on average. Exploratory analysis suggests that valence and dancibility are also similar on average, but their distribution varies. It would be interesting to explore whether valence explains danceability with a linear relationship in *The Weeknd*'s music. 
+The analysis suggests ***Kiss Land*** and ***After Hours*** are similar in key attributes. Both albums likely have similar `energy` on average. While `valence` and `danceability` also appear similar, their distributions differ. Further exploration of how `valence` affects `danceability` in *The Weeknd*'s music would be valuable.
 
 [^1]: Bauer, Patricia. “The Weeknd | Biography, Songs, Albums, & Facts.” Encyclopedia Britannica, December 3, 2024. <https://www.britannica.com/biography/the-Weeknd>.
 
